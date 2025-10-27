@@ -31,7 +31,8 @@ def seed_data(session):
 
     now = datetime.utcnow()
     for tr in tournaments:
-        for i in range(6):
+        # Past matches (3 matches)
+        for i in range(3):
             home, away = fake.random_choices(elements=teams, length=2)
             m = Match(
                 tournament_id=tr.id,
@@ -40,6 +41,19 @@ def seed_data(session):
                 home_score=fake.random_int(min=0, max=6),
                 away_score=fake.random_int(min=0, max=6),
                 played_at=now - timedelta(days=fake.random_int(min=0, max=30)),
+            )
+            session.add(m)
+
+        # Future matches (3 matches) - next year
+        for i in range(3):
+            home, away = fake.random_choices(elements=teams, length=2)
+            m = Match(
+                tournament_id=tr.id,
+                home_team_id=home.id,
+                away_team_id=away.id,
+                home_score=None,  # Not played yet
+                away_score=None,  # Not played yet
+                played_at=now + timedelta(days=fake.random_int(min=365, max=395)),  # Between 1 year and 1 year + 1 month
             )
             session.add(m)
     session.commit()
