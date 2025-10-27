@@ -1,9 +1,9 @@
 Hockey API (minimal)
 =====================
 
-deployed on: https://api-jsem.onrender.com
+deployed on: http://apihockey-api.francecentral.azurecontainer.io:8000
 
-Documentation (Swagger): https://api-jsem.onrender.com/docs
+Documentation (Swagger): http://apihockey-api.francecentral.azurecontainer.io:8000/docs
 
 Quick start (local)
 -------------------
@@ -37,13 +37,13 @@ Examples
 List teams (deployed):
 
 ```bash
-curl https://api-jsem.onrender.com/teams
+curl http://apihockey-api.francecentral.azurecontainer.io:8000/teams
 ```
 
 List matches (deployed):
 
 ```bash
-curl https://api-jsem.onrender.com/matches
+curl http://apihockey-api.francecentral.azurecontainer.io:8000/matches
 ```
 
 Notes

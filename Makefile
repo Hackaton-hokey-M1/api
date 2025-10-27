@@ -21,9 +21,9 @@ venv:
 	fi
 
 install: venv
-	@echo "Installing from requirements.in into $(VENV)..."
+	@echo "Installing from requirements.txt into $(VENV)..."
 	@$(PIP) install --upgrade pip
-	@$(PIP) install -r requirements.in
+	@$(PIP) install -r requirements.txt
 
 clean-venv:
 	@echo "Removing virtualenv directory $(VENV)..."
