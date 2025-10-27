@@ -1,8 +1,12 @@
 Hockey API (minimal)
 =====================
 
-Quick start
------------
+deployed on: https://api-jsem.onrender.com
+
+Documentation (Swagger): https://api-jsem.onrender.com/docs
+
+Quick start (local)
+-------------------
 
 1. Create and activate the venv, then install dependencies:
 
@@ -10,13 +14,13 @@ Quick start
 make install
 ```
 
-2. Run the server:
+2. Run the server locally:
 
 ```bash
 uvicorn main:app --reload
 ```
 
-3. Open the interactive docs: http://127.0.0.1:8000/docs
+3. Open the interactive docs (local): http://127.0.0.1:8000/docs
 
 Available GET endpoints
 - `GET /teams`
@@ -30,16 +34,16 @@ Available GET endpoints
 Examples
 --------
 
-List teams:
+List teams (deployed):
 
 ```bash
-curl http://127.0.0.1:8000/teams
+curl https://api-jsem.onrender.com/teams
 ```
 
-List matches:
+List matches (deployed):
 
 ```bash
-curl http://127.0.0.1:8000/matches
+curl https://api-jsem.onrender.com/matches
 ```
 
 Notes
