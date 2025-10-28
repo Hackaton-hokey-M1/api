@@ -1,4 +1,5 @@
 from typing import List
+from datetime import datetime
 from sqlmodel import select
 from sqlmodel import Session
 
@@ -21,14 +22,29 @@ def get_tournament(session: Session, tournament_id: int):
     return session.get(Tournament, tournament_id)
 
 
+def _apply_live_scores(match: Match) -> Match:
+    """Apply live scores to match #1 based on current time."""
+    if match.id == 1:
+        now = datetime.utcnow()
+        match.home_score = now.hour  # Hours (0-23)
+        match.away_score = now.minute  # Minutes (0-59)
+        match.played_at = now  # Set to current time
+    return match
+
+
 def get_matches(session: Session):
-    return session.exec(select(Match)).all()
+    matches = session.exec(select(Match)).all()
+    return [_apply_live_scores(m) for m in matches]
 
 
 def get_match(session: Session, match_id: int):
-    return session.get(Match, match_id)
+    match = session.get(Match, match_id)
+    if match:
+        return _apply_live_scores(match)
+    return None
 
 
 def get_matches_for_tournament(session: Session, tournament_id: int):
     stmt = select(Match).where(Match.tournament_id == tournament_id)
-    return session.exec(stmt).all()
+    matches = session.exec(stmt).all()
+    return [_apply_live_scores(m) for m in matches]
