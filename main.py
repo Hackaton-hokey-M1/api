@@ -20,8 +20,7 @@ def on_startup():
     from sqlmodel import SQLModel, Session
 
     SQLModel.metadata.create_all(engine)
-    # seed data
+
+    # seed data (clears and reseeds every time)
     with Session(engine) as session:
         seed_data(session)
-
-

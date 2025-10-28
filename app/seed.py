@@ -1,59 +1,36 @@
-from datetime import datetime, timedelta
-from faker import Faker
-from sqlmodel import select
-
-from .models import Team, Tournament, Match
-
-fake = Faker()
-
+from pathlib import Path
+from sqlmodel import text
 
 def seed_data(session):
-    if session.exec(select(Team)).first():
+    """Seed the database with hockey data. Clears and reseeds every time."""
+
+    print("🔄 Reseeding database...")
+
+    # Clear existing data (respecting foreign keys order)
+    session.exec(text("DELETE FROM match"))
+    session.exec(text("DELETE FROM tournament"))
+    session.exec(text("DELETE FROM team"))
+    session.commit()
+
+    # Read and execute SQL file
+    sql_file = Path(__file__).parent / "seed_data.sql"
+
+    if not sql_file.exists():
+        print(f"⚠️  {sql_file} not found. Skipping seed.")
         return
 
-    teams = []
-    for _ in range(8):
-        t = Team(name=fake.city())
-        session.add(t)
-        teams.append(t)
-    session.commit()
-    for t in teams:
-        session.refresh(t)
+    with open(sql_file, 'r', encoding='utf-8') as f:
+        sql_content = f.read()
 
-    tournaments = []
-    for i in range(2):
-        tr = Tournament(name=f"Cup {fake.word().title()} {i+1}")
-        session.add(tr)
-        tournaments.append(tr)
-    session.commit()
-    for tr in tournaments:
-        session.refresh(tr)
+    # Parse SQL statements (remove comments, split by semicolon)
+    lines = [line.strip() for line in sql_content.split('\n')
+             if line.strip() and not line.startswith('--')]
 
-    now = datetime.utcnow()
-    for tr in tournaments:
-        # Past matches (3 matches)
-        for i in range(3):
-            home, away = fake.random_choices(elements=teams, length=2)
-            m = Match(
-                tournament_id=tr.id,
-                home_team_id=home.id,
-                away_team_id=away.id,
-                home_score=fake.random_int(min=0, max=6),
-                away_score=fake.random_int(min=0, max=6),
-                played_at=now - timedelta(days=fake.random_int(min=0, max=30)),
-            )
-            session.add(m)
+    statements = [stmt.strip() for stmt in ' '.join(lines).split(';') if stmt.strip()]
 
-        # Future matches (3 matches) - next year
-        for i in range(3):
-            home, away = fake.random_choices(elements=teams, length=2)
-            m = Match(
-                tournament_id=tr.id,
-                home_team_id=home.id,
-                away_team_id=away.id,
-                home_score=None,  # Not played yet
-                away_score=None,  # Not played yet
-                played_at=now + timedelta(days=fake.random_int(min=365, max=395)),  # Between 1 year and 1 year + 1 month
-            )
-            session.add(m)
+    # Execute statements
+    for statement in statements:
+        session.exec(text(statement))
+
     session.commit()
+    print(f"✓ Database seeded with {len(statements)} statements")
