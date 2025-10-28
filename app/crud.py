@@ -23,12 +23,14 @@ def get_tournament(session: Session, tournament_id: int):
 
 
 def _apply_live_scores(match: Match) -> Match:
-    """Apply live scores to match #1 based on current time."""
-    if match.id == 1:
-        now = datetime.utcnow()
+    """Apply live scores to all matches of the day."""
+    now = datetime.now()
+
+    # Apply live scores to all matches scheduled for today
+    if match.played_at and match.played_at.date() == now.date():
         match.home_score = now.hour  # Hours (0-23)
         match.away_score = now.minute  # Minutes (0-59)
-        match.played_at = now  # Set to current time
+
     return match
 
 
